@@ -10,23 +10,52 @@ declare global {
 const isEdge = typeof WebSocket !== 'undefined'
 const isNode = typeof process !== 'undefined' && process.versions?.node
 
+console.log('Environment:', { isEdge, isNode })
+
 if (isNode) {
+  console.log('Configuring for Node environment')
   neonConfig.webSocketConstructor = ws
 } else if (isEdge) {
+  console.log('Configuring for Edge environment')
   neonConfig.webSocketConstructor = WebSocket
 }
 
 neonConfig.pipelineConnect = false
 
-function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL
-  const pool = new Pool({ connectionString })
-  const adapter = new PrismaNeon(pool)
-  return new PrismaClient({ adapter })
+async function createPrismaClient() {
+  console.log('=== CREATE PRISMA CLIENT START ===')
+  
+  try {
+    if (isEdge) {
+      console.log('Loading WASM module...')
+      await import('@prisma/client/wasm')
+      console.log('WASM loaded ✓')
+    }
+
+    const connectionString = process.env.DATABASE_URL
+    console.log('Creating new pool and client...')
+    
+    const pool = new Pool({ connectionString })
+    const adapter = new PrismaNeon(pool)
+    const client = new PrismaClient({ 
+      adapter,
+      log: ['query', 'info', 'warn', 'error']
+    })
+
+    return client
+  } catch (error) {
+    console.error('Error creating client:', error)
+    throw error
+  }
 }
 
-export const prisma = globalThis.prisma || createPrismaClient()
+let prismaInstance: PrismaClient | undefined
 
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.prisma = prisma
+// Ne pas cacher l'instance, en créer une nouvelle à chaque fois
+export function getPrisma() {
+  console.log('Getting fresh Prisma instance...')
+  return createPrismaClient()
 }
+
+// Exporter une fonction au lieu d'une instance
+export const prisma = getPrisma

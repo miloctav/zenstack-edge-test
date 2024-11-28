@@ -1,31 +1,19 @@
-  <template>
-  <div>
-    <h1>Test Items</h1>
-    <div v-if="items">
-      <div v-for="item in items" :key="item.id">
-        {{ item.name }}
-      </div>
-    </div>
-    <button @click="createItem">Create Test Item</button>
-  </div>
-</template>
-
-<script setup>
-import { useFindManyTestItem, useCreateTestItem } from '~/lib/hooks'
-
-const { data: items, refetch } = useFindManyTestItem()
-const { mutateAsync: createTestItem } = useCreateTestItem()
-
-async function createItem() {
-  try {
-    await createTestItem({
-      data: {
-        name: 'Test ' + Date.now()
-      }
-    })
-    refetch()
-  } catch (error) {
-    console.error('Error creating item:', error)
-  }
-}
+<script setup lang="ts">
+import { provideHooksContext } from './lib/hooks';
+provideHooksContext({
+  endpoint: `/api/model`,
+});
 </script>
+
+<template>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
+</template>
+<style>
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+</style>
