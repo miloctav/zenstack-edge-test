@@ -1,0 +1,22 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+plugin hooks {
+  provider = '@zenstackhq/tanstack-query'
+  target = 'vue'
+  output = 'lib/hooks'
+}
+
+model TestItem {
+  id    Int     @id @default(autoincrement())
+  name  String
+
+  @@allow('all', true)
+}

@@ -1,0 +1,24 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4",
+    "@prisma/adapter-neon": "^5.22.0",
+    "@prisma/client": "^5.22.0",
+    "@zenstackhq/runtime": "^2.9.4",
+    "@zenstackhq/server": "^2.9.4",
+    "@zenstackhq/tanstack-query": "^2.9.4",
+    "nuxt": "^3.14.1592",
+    "prisma": "^5.22.0",
+    "vue": "latest",
+    "vue-router": "latest"
+  }
+}
